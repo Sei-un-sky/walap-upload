@@ -8,6 +8,8 @@ Chinese documentation: [README_CN.md](README_CN.md)
 
 Installation guides: [INSTALL.md](INSTALL.md) / [INSTALL_CN.md](INSTALL_CN.md)
 
+Usage guides: [USAGE.md](USAGE.md) / [USAGE_CN.md](USAGE_CN.md)
+
 Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ## Features

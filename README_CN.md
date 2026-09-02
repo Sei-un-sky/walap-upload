@@ -8,6 +8,8 @@ MCDReforged 自动世界备份插件。
 
 安装教程：[INSTALL_CN.md](INSTALL_CN.md) / [INSTALL.md](INSTALL.md)
 
+使用文档：[USAGE_CN.md](USAGE_CN.md) / [USAGE.md](USAGE.md)
+
 发布说明：[RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ## 功能
