@@ -115,3 +115,7 @@ SFTP 示例：
 - `unicom`
 
 这样第一版可以先稳定使用，同时保留对象存储和网盘直连 API 的模块边界。
+
+## 许可证
+
+MIT License，详见 [LICENSE](LICENSE)。

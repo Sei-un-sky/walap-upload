@@ -126,3 +126,7 @@ Reserved but not implemented yet:
 - `unicom`
 
 This keeps the plugin usable while preserving the module boundary for object storage and direct netdisk API support.
+
+## License
+
+MIT License. See [LICENSE](LICENSE).
