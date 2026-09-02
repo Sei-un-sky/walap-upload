@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# MCDR runtime config may contain storage credentials.
+config/
+
+# Runtime backup outputs.
+backups/
+backup_tmp/
+remote_backups/
+*.zip
+*.tar
+*.tar.gz
+*.tar.zst
