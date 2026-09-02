@@ -4,6 +4,12 @@ MCDReforged 自动世界备份插件。
 
 `0.1.0` 版本只做一件事：把完整世界目录打包成 zip，然后上传到远端存储。插件不提供自动回档，也不会自动覆盖世界目录。需要回档时，管理员手动下载备份、停服、替换存档。
 
+英文文档：[README.md](README.md)
+
+安装教程：[INSTALL_CN.md](INSTALL_CN.md) / [INSTALL.md](INSTALL.md)
+
+发布说明：[RELEASE_NOTES.md](RELEASE_NOTES.md)
+
 ## 功能
 
 - 手动命令：`!!wp now`
@@ -81,7 +87,7 @@ SFTP 示例：
   "name": "backup_server",
   "type": "sftp",
   "enabled": true,
-  "host": "192.168.10.23",
+  "host": "backup.example.com",
   "port": 22,
   "username": "root",
   "password": "change-me",

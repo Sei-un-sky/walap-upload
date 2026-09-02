@@ -4,6 +4,12 @@ MCDReforged plugin for automatic Minecraft world backups.
 
 Version `0.1.0` focuses on one job: archive the full world directories and upload the zip file to remote storage. It does not provide rollback or automatic restore.
 
+Chinese documentation: [README_CN.md](README_CN.md)
+
+Installation guides: [INSTALL.md](INSTALL.md) / [INSTALL_CN.md](INSTALL_CN.md)
+
+Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
+
 ## Features
 
 - Manual command: `!!wp now`
@@ -92,7 +98,7 @@ Example SFTP target:
   "name": "backup_server",
   "type": "sftp",
   "enabled": true,
-  "host": "192.168.10.23",
+  "host": "backup.example.com",
   "port": 22,
   "username": "root",
   "password": "change-me",
