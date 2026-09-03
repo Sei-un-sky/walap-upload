@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide installs Walap Upload `v0.1.0` into an existing MCDReforged server.
+This guide installs Walap Upload `v0.3.0` into an existing MCDReforged server.
 
 ## Requirements
 
@@ -13,7 +13,7 @@ The plugin does not restore worlds automatically. Restore is manual: download a 
 
 ## Install The Plugin
 
-1. Download `walap_upload-v0.1.0.mcdr` from the release.
+1. Download `walap_upload-v0.3.0.mcdr` from the release.
 2. Put it into your MCDReforged `plugins/` directory.
 3. Restart MCDReforged, or run:
 
@@ -26,6 +26,8 @@ The plugin does not restore worlds automatically. Restore is manual: download a 
 ```text
 config/walap_upload/config.json
 ```
+
+If the plugin reports `No module named 'walap_upload'`, the downloaded `.mcdr` archive has an invalid structure. A valid archive must contain `walap_upload/__init__.py`.
 
 ## Install Optional Dependency For SFTP
 
@@ -117,6 +119,7 @@ Use WebDAV for Alist, NAS, Nextcloud, and compatible netdisk setups:
 !!wp list      list recent backup records
 !!wp status    show current status
 !!wp clean     apply retention cleanup
+!!wp test      test enabled remote storage connections
 !!wp reload    reload config.json
 !!wp cn        switch command output to Chinese
 !!wp en        switch command output to English
@@ -138,4 +141,4 @@ After `!!wp now`, check:
 - remote storage target path
 - `config/walap_upload/metadata.json`
 
-The archive is created while Minecraft saving is paused. After the archive is ready, the plugin runs `save-on` and then uploads the backup, so the upload does not keep world saving disabled.
+Minecraft saving is paused only while the plugin copies a temporary world snapshot. It runs `save-on` immediately after the snapshot is complete, then creates and uploads the archive from that snapshot. The `backup.temp_dir` filesystem must have enough free space for a temporary copy of the configured world directories.

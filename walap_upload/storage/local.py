@@ -14,6 +14,9 @@ class LocalBackend(StorageBackend):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(local_file, target)
 
+    def test_connection(self) -> None:
+        self.directory.mkdir(parents=True, exist_ok=True)
+
     def delete(self, remote_path: str) -> None:
         target = self.directory / remote_path
         if target.exists() and target.is_file():

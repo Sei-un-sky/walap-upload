@@ -19,5 +19,8 @@ class StorageBackend:
     def upload(self, local_file: Path, remote_path: str) -> None:
         raise NotImplementedError
 
+    def test_connection(self) -> None:
+        raise NotImplementedError
+
     def delete(self, remote_path: str) -> None:
         raise NotImplementedError

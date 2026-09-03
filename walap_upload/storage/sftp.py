@@ -14,6 +14,10 @@ class SftpBackend(StorageBackend):
             finally:
                 sftp.close()
 
+    def test_connection(self) -> None:
+        client = self._connect()
+        client.close()
+
     def delete(self, remote_path: str) -> None:
         with self._connect() as client:
             sftp = client.open_sftp()

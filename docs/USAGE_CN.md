@@ -17,6 +17,7 @@ Walap Upload 在 MCDReforged 数据目录下使用两个文件：
 !!wp list      查看最近备份记录
 !!wp status    查看备份任务和定时器状态
 !!wp clean     立即执行保留策略清理
+!!wp test      测试启用的远端存储连接
 !!wp reload    重载 config/walap_upload/config.json
 !!wp cn        切换命令输出为中文
 !!wp en        切换命令输出为英文
@@ -153,11 +154,11 @@ Walap Upload 在 MCDReforged 数据目录下使用两个文件：
 
 `backup.format`
 
-归档格式配置。`v0.1.0` 的实际实现会创建 zip 压缩包，所以请保持为 `zip`。
+归档格式配置。`v0.3.0` 的实际实现会创建 zip 压缩包，所以请保持为 `zip`。
 
 `backup.temp_dir`
 
-为备份操作预留的临时工作目录。相对路径同样以 MCDR 工作目录为起点解析。在 `v0.1.0` 中，zip 创建主要直接写入 `local_dir`，但保留独立临时目录配置是为了兼容后续归档实现。
+用于创建世界快照的临时工作目录。相对路径同样以 MCDR 工作目录为起点解析。每次备份结束后快照都会删除，因此该目录必须有足够空间容纳一份配置的世界目录临时副本。
 
 `backup.local_dir`
 
@@ -165,7 +166,7 @@ Walap Upload 在 MCDReforged 数据目录下使用两个文件：
 
 `backup.keep_local_after_upload`
 
-表达“上传后是否保留本地备份”的用户意图，并为后续行为保留配置位。`v0.1.0` 中，本地旧备份删除主要由备份完成后的 `retention` 部分控制，尤其是 `retention.delete_local`。
+表达“上传后是否保留本地备份”的用户意图，并为后续行为保留配置位。`v0.3.0` 中，本地旧备份删除主要由备份完成后的 `retention` 部分控制，尤其是 `retention.delete_local`。
 
 `backup.calculate_sha256`
 
@@ -178,11 +179,12 @@ Walap Upload 在 MCDReforged 数据目录下使用两个文件：
 ```text
 save-off
 save-all flush
-创建 zip 压缩包
+复制世界快照
 save-on
+创建 zip 压缩包
 ```
 
-上传会在 `save-on` 之后开始，所以世界保存只会在创建压缩包期间暂停。只有在服务端环境不支持这些命令，或者你明确想自己管理保存流程时，才建议设为 `false`。
+压缩和上传会在 `save-on` 之后开始，所以世界保存只会在复制快照期间暂停。只有在服务端环境不支持这些命令，或者你明确想自己管理保存流程时，才建议设为 `false`。
 
 ## upload
 
@@ -192,7 +194,7 @@ save-on
 
 `upload.mode`
 
-上传模式配置。默认值是 `all`。在 `v0.1.0` 中，上传器会把备份发送到所有启用的目标，不会根据该字段改变行为，所以保持为 `all` 即可。
+上传模式配置。默认值是 `all`。在 `v0.3.0` 中，上传器会把备份发送到所有启用的目标，不会根据该字段改变行为，所以保持为 `all` 即可。
 
 `upload.retry_count`
 
@@ -216,7 +218,7 @@ save-on
 
 `type`
 
-后端类型。`v0.1.0` 已实现：
+后端类型。`v0.3.0` 已实现：
 
 - `local`
 - `webdav`

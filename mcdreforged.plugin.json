@@ -1,6 +1,6 @@
 {
   "id": "walap_upload",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "name": "Walap Upload",
   "description": {
     "en_us": "Automatically archive Minecraft worlds and upload backups to remote storage.",
@@ -8,6 +8,7 @@
   },
   "author": "walap-upload",
   "link": "",
+  "entrypoint": "walap_upload",
   "dependencies": {
     "mcdreforged": ">=2.12.0"
   }

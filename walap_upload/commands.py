@@ -1,6 +1,7 @@
 from mcdreforged.api.all import *
 
 from .service import format_size
+from .uploader import UploadManager
 
 
 def register_commands(server: PluginServerInterface, service, scheduler):
@@ -10,6 +11,7 @@ def register_commands(server: PluginServerInterface, service, scheduler):
     builder.command('!!wp list', lambda source: _list_backups(source, service))
     builder.command('!!wp status', lambda source: _status(source, service, scheduler))
     builder.command('!!wp clean', lambda source: _clean(source, service))
+    builder.command('!!wp test', lambda source: _test_connections(source, service))
     builder.command('!!wp reload', lambda source: _reload(source, service, scheduler))
     builder.command('!!wp cn', lambda source: _set_language(source, service, 'cn'))
     builder.command('!!wp en', lambda source: _set_language(source, service, 'en'))
@@ -20,6 +22,7 @@ def register_commands(server: PluginServerInterface, service, scheduler):
     server.register_help_message('!!wp list', 'List recent backups')
     server.register_help_message('!!wp status', 'Show backup service status')
     server.register_help_message('!!wp clean', 'Apply retention cleanup')
+    server.register_help_message('!!wp test', 'Test enabled remote storage connections')
 
 
 def _run_backup(source: CommandSource, service, trigger: str):
@@ -57,6 +60,20 @@ def _clean(source: CommandSource, service):
         source.reply(f"cleanup done, local_deleted={result['local_deleted']}, remote_deleted={result['remote_deleted']}")
 
 
+def _test_connections(source: CommandSource, service):
+    results = UploadManager(service.config.data, service.server.logger).test_connections()
+    if not results:
+        source.reply(_text(service, 'no_targets'))
+        return
+    lines = [_text(service, 'connection_results')]
+    for name, result in results.items():
+        if result['status'] == 'success':
+            lines.append(f"{name}: {_text(service, 'connection_ok')}")
+        else:
+            lines.append(f"{name}: {_text(service, 'connection_failed')} ({result.get('error', 'unknown error')})")
+    source.reply('\n'.join(lines))
+
+
 def _reload(source: CommandSource, service, scheduler):
     service.reload_config()
     scheduler.reload(service.config)
@@ -76,6 +93,7 @@ def _help(source: CommandSource, service):
             '!!wp list   查看最近备份记录',
             '!!wp status 查看当前状态',
             '!!wp clean  按保留策略清理旧备份',
+            '!!wp test   测试启用的远端存储连接',
             '!!wp reload 重载配置',
             '!!wp cn     切换中文',
             '!!wp en     Switch to English',
@@ -87,6 +105,7 @@ def _help(source: CommandSource, service):
             '!!wp list   list recent backup records',
             '!!wp status show current status',
             '!!wp clean  apply retention cleanup',
+            '!!wp test   test enabled remote storage connections',
             '!!wp reload reload config.json',
             '!!wp cn     切换中文',
             '!!wp en     switch to English',
@@ -103,6 +122,10 @@ def _text(service, key: str) -> str:
         'reloaded': ('Walap Upload config reloaded', 'Walap Upload 配置已重载'),
         'language_cn': ('Language switched to Chinese', '已切换为中文'),
         'language_en': ('Language switched to English', 'Switched to English'),
+        'no_targets': ('No enabled upload targets', '没有启用的上传目标'),
+        'connection_results': ('Remote connection test results:', '远端连接测试结果:'),
+        'connection_ok': ('OK', '成功'),
+        'connection_failed': ('FAILED', '失败'),
     }
     en_text, cn_text = messages[key]
     return cn_text if cn else en_text

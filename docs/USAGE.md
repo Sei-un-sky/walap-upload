@@ -17,6 +17,7 @@ After editing `config.json`, run `!!wp reload` in the MCDR console or in game, o
 !!wp list      list recent backup records
 !!wp status    show whether a backup task and scheduler are running
 !!wp clean     apply the retention policy now
+!!wp test      test enabled remote storage connections
 !!wp reload    reload config/walap_upload/config.json
 !!wp cn        switch command output to Chinese
 !!wp en        switch command output to English
@@ -153,11 +154,11 @@ Run every 30 minutes. The minimum actual interval is 60 seconds.
 
 `backup.format`
 
-Archive format setting. In `v0.1.0`, the implementation creates zip archives, so keep this as `zip`.
+Archive format setting. In `v0.3.0`, the implementation creates zip archives, so keep this as `zip`.
 
 `backup.temp_dir`
 
-Temporary working directory reserved for backup operations. It is resolved like other relative paths from the MCDR working directory. In `v0.1.0`, the zip creation path mainly writes to `local_dir`, but keeping a dedicated temp path in the config preserves compatibility with future archive implementations.
+Temporary working directory used for world snapshots. It is resolved like other relative paths from the MCDR working directory. The snapshot is removed after each backup, so this directory must have enough free space for a temporary copy of the configured world directories.
 
 `backup.local_dir`
 
@@ -165,7 +166,7 @@ Directory where local backup zip files are created. Relative paths are resolved 
 
 `backup.keep_local_after_upload`
 
-Whether local backup files should be kept after upload. This field is present in the config for user intent and future behavior. In `v0.1.0`, local deletion is controlled by the retention section after a backup finishes, especially `retention.delete_local`.
+Whether local backup files should be kept after upload. This field is present in the config for user intent and future behavior. In `v0.3.0`, local deletion is controlled by the retention section after a backup finishes, especially `retention.delete_local`.
 
 `backup.calculate_sha256`
 
@@ -178,8 +179,9 @@ When `true`, the plugin runs Minecraft save commands around archive creation:
 ```text
 save-off
 save-all flush
-create zip archive
+copy world snapshot
 save-on
+create zip archive
 ```
 
 Upload starts after `save-on`, so world saving is only paused while the archive is being created. Set this to `false` only if your server environment does not support these commands or you deliberately want to manage saving yourself.
@@ -192,7 +194,7 @@ Master switch for uploading. `true` uploads the archive to enabled targets. `fal
 
 `upload.mode`
 
-Upload mode setting. The default is `all`. In `v0.1.0`, the uploader sends the backup to every enabled target regardless of this value, so leave it as `all`.
+Upload mode setting. The default is `all`. In `v0.3.0`, the uploader sends the backup to every enabled target regardless of this value, so leave it as `all`.
 
 `upload.retry_count`
 
@@ -216,7 +218,7 @@ Unique display name for the target. This is used as the key in `metadata.json` u
 
 `type`
 
-Backend type. Implemented values in `v0.1.0` are:
+Backend type. Implemented values in `v0.3.0` are:
 
 - `local`
 - `webdav`

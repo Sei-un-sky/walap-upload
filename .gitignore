@@ -3,9 +3,12 @@ __pycache__/
 .pytest_cache/
 tmp/
 tests/
+pre-release/
+dist/
 
 # MCDR runtime config may contain storage credentials.
 config/
+transfer*
 
 # Runtime backup outputs.
 backups/

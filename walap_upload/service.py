@@ -8,6 +8,7 @@ from .config import Config
 from .hash_utils import sha256_file
 from .metadata import MetadataStore
 from .retention import delete_local_file, select_expired
+from .snapshot import remove_snapshot, snapshot_world_dirs
 from .uploader import UploadManager
 
 
@@ -79,6 +80,7 @@ class BackupService:
         backup_id = created_at.strftime('%Y%m%d-%H%M%S')
         file_name = f"{self.config.server_name}_full_{created_at.strftime('%Y-%m-%d_%H-%M-%S')}_{trigger}.zip"
         output_file = self.config.backup_dir / file_name
+        snapshot_root = self.config.temp_dir / backup_id
         world_dirs = [path for path in self.config.world_dirs if path.exists() and path.is_dir()]
         if not world_dirs:
             raise RuntimeError('No world directories matched config world_dirs')
@@ -94,27 +96,32 @@ class BackupService:
         }
         self.metadata.add_record(record)
         try:
-            self._prepare_world_save()
             try:
-                create_world_zip(output_file, world_dirs, record)
+                self._prepare_world_save()
+                try:
+                    snapshot_dirs = snapshot_world_dirs(world_dirs, snapshot_root)
+                finally:
+                    self._resume_world_save()
+
+                self.server.logger.info(f'World save resumed. Creating archive from snapshot: {file_name}')
+                create_world_zip(output_file, snapshot_dirs, record)
+
+                size = output_file.stat().st_size
+                patch = {'size': size, 'status': 'archived'}
+                if self.config.data['backup'].get('calculate_sha256', True):
+                    patch['sha256'] = sha256_file(output_file)
+                self.metadata.update_record(backup_id, patch)
+
+                uploader = UploadManager(self.config.data, self.server.logger)
+                upload_results = uploader.upload(output_file)
+                final_status = 'uploaded'
+                if upload_results and any(item.get('status') != 'success' for item in upload_results.values()):
+                    final_status = 'partial_failed'
+                self.metadata.update_record(backup_id, {'upload_results': upload_results, 'status': final_status})
+                cleanup = self.clean_old_backups()
+                self.server.logger.info(f'Backup {backup_id} finished: {final_status}, cleanup={cleanup}')
             finally:
-                self._resume_world_save()
-
-            size = output_file.stat().st_size
-            self.server.logger.info(f'World save resumed. Archive is ready: {file_name} ({format_size(size)}). Starting upload.')
-            patch = {'size': size, 'status': 'archived'}
-            if self.config.data['backup'].get('calculate_sha256', True):
-                patch['sha256'] = sha256_file(output_file)
-            self.metadata.update_record(backup_id, patch)
-
-            uploader = UploadManager(self.config.data, self.server.logger)
-            upload_results = uploader.upload(output_file)
-            final_status = 'uploaded'
-            if upload_results and any(item.get('status') != 'success' for item in upload_results.values()):
-                final_status = 'partial_failed'
-            self.metadata.update_record(backup_id, {'upload_results': upload_results, 'status': final_status})
-            cleanup = self.clean_old_backups()
-            self.server.logger.info(f'Backup {backup_id} finished: {final_status}, cleanup={cleanup}')
+                remove_snapshot(snapshot_root)
         except Exception as exc:
             self.metadata.update_record(backup_id, {'status': 'failed', 'error': str(exc)})
             self.server.logger.error(f'Backup {backup_id} failed: {exc}')

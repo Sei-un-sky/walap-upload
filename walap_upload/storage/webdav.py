@@ -21,6 +21,11 @@ class WebDavBackend(StorageBackend):
         if status not in {200, 201, 204}:
             raise StorageError(f'WebDAV PUT failed: {status} {reason}')
 
+    def test_connection(self) -> None:
+        status, reason, _ = self._request('PROPFIND', '')
+        if status not in {200, 207}:
+            raise StorageError(f'WebDAV connection test failed: {status} {reason}')
+
     def delete(self, remote_path: str) -> None:
         status, reason, _ = self._request('DELETE', remote_path)
         if status not in {200, 202, 204, 404}:

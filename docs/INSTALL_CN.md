@@ -1,6 +1,6 @@
 # 安装教程
 
-本文说明如何把 Walap Upload `v0.1.0` 安装到已有的 MCDReforged 服务端。
+本文说明如何把 Walap Upload `v0.3.0` 安装到已有的 MCDReforged 服务端。
 
 ## 环境要求
 
@@ -13,7 +13,7 @@
 
 ## 安装插件
 
-1. 从 release 下载 `walap_upload-v0.1.0.mcdr`。
+1. 从 release 下载 `walap_upload-v0.3.0.mcdr`。
 2. 放入 MCDReforged 的 `plugins/` 目录。
 3. 重启 MCDReforged，或者执行：
 
@@ -26,6 +26,8 @@
 ```text
 config/walap_upload/config.json
 ```
+
+如果插件提示 `No module named 'walap_upload'`，说明下载到的 `.mcdr` 包结构不正确。正确的包内必须包含 `walap_upload/__init__.py`。
 
 ## 安装 SFTP 依赖
 
@@ -117,6 +119,7 @@ WebDAV 适合 Alist、NAS、Nextcloud、坚果云以及其他兼容网盘：
 !!wp list      查看最近备份记录
 !!wp status    查看当前状态
 !!wp clean     按保留策略清理旧备份
+!!wp test      测试启用的远端存储连接
 !!wp reload    重载 config.json
 !!wp cn        切换为中文输出
 !!wp en        切换为英文输出
@@ -138,4 +141,4 @@ WebDAV 适合 Alist、NAS、Nextcloud、坚果云以及其他兼容网盘：
 - 远端存储目标路径
 - `config/walap_upload/metadata.json`
 
-插件会在打包时短暂关闭世界自动保存。压缩包生成后会先执行 `save-on`，然后才开始上传，所以大文件上传期间不会继续禁止世界保存。
+插件只会在复制临时世界快照时短暂关闭世界自动保存。快照复制完成后立即执行 `save-on`，之后才进行压缩和上传，因此大文件压缩、校验和上传期间游戏可以继续保存。`backup.temp_dir` 对应的磁盘需要有足够空间容纳一份临时世界副本。

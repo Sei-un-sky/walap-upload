@@ -2,7 +2,7 @@
 
 MCDReforged plugin for automatic Minecraft world backups.
 
-Version `0.1.0` focuses on one job: archive the full world directories and upload the zip file to remote storage. It does not provide rollback or automatic restore.
+Version `0.2.1` focuses on one job: archive the full world directories and upload the zip file to remote storage. It does not provide rollback or automatic restore.
 
 Chinese documentation: [README_CN.md](README_CN.md)
 
@@ -18,8 +18,8 @@ Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md)
 - `!!wp` help output and English/Chinese command messages
 - Scheduled backup by interval
 - Full world zip archive
-- Minecraft save commands around archiving: `save-off`, `save-all flush`, archive, then `save-on`
-- Upload starts after `save-on`, so the game can continue saving while the upload is running
+- Minecraft save commands around snapshot creation: `save-off`, `save-all flush`, snapshot, then `save-on`
+- Compression and upload run after `save-on`, so the game can continue saving during both operations
 - Upload backends as independent modules
 - Built-in first version backends: `local`, `webdav`, `ftp`, `ftps`, `sftp`
 - Reserved backend module entries: `s3`, `baidu`, `unicom`

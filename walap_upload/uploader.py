@@ -25,6 +25,21 @@ class UploadManager:
             results[backend.name] = self._upload_one(backend, local_file, remote_path, retry_count, retry_interval)
         return results
 
+    def test_connections(self) -> Dict[str, dict]:
+        upload_config = self.config.get('upload', {})
+        if not upload_config.get('enabled', True):
+            return {}
+        results: Dict[str, dict] = {}
+        for target in self._enabled_targets(upload_config.get('targets', [])):
+            name = str(target.get('name', target.get('type', 'unnamed')))
+            try:
+                backend = create_backend(target)
+                backend.test_connection()
+                results[name] = {'type': target.get('type'), 'status': 'success'}
+            except Exception as exc:
+                results[name] = {'type': target.get('type'), 'status': 'failed', 'error': str(exc)}
+        return results
+
     def delete_remote(self, record: dict) -> int:
         deleted = 0
         targets_by_name = {item.get('name'): item for item in self._enabled_targets(self.config.get('upload', {}).get('targets', []))}

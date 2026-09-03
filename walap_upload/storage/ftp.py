@@ -15,6 +15,10 @@ class FtpBackend(StorageBackend):
             with local_file.open('rb') as file:
                 ftp.storbinary(f'STOR {remote_path}', file)
 
+    def test_connection(self) -> None:
+        ftp = self._connect()
+        ftp.quit()
+
     def delete(self, remote_path: str) -> None:
         with self._connect() as ftp:
             try:
